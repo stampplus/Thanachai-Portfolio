@@ -35,6 +35,12 @@ where design is emotion, and code is its heartbeat.
 
 ---
 
+> 🧠 Powered by creativity, logic, and a touch of AI.
+> Built with love, guided by intuition, refined by code.
+
+
+---
+
 ## 🎨 Features
 
 - 🌑 **Dark-mode minimalism** — calm, focused, and timeless  

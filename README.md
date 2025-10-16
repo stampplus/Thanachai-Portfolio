@@ -1,6 +1,6 @@
 
 # 🌙 Thanachai Portfolio — Where Code Meets Vibe
-[![GitHub Pages](https://img.shields.io/badge/Deploy-GitHub%20Pages-blue?logo=github)](https://stamppplus.github.io/Thanachai-Portfolio/)
+[![GitHub Pages](https://img.shields.io/badge/Deploy-GitHub%20Pages-blue?logo=github)](https://stampplus.github.io/Thanachai-Portfolio/)
 [![Vibe Code](https://img.shields.io/badge/vibe-code-black?logo=visualstudiocode)](#)
 [![AI Creative](https://img.shields.io/badge/AI-Creative-pink?logo=openai)](#)
 > “Between logic and light — code becomes creativity.”
@@ -53,7 +53,7 @@ where design is emotion, and code is its heartbeat.
 
 ## 🚀 Live Demo
 
-🔗 [**View Portfolio Live**](https://stamppplus.github.io/Thanachai-Portfolio/)  
+🔗 [**View Portfolio Live**](https://stampplus.github.io/Thanachai-Portfolio/)  
 
 *(Hosted with GitHub Pages — load time optimized for a smooth experience)*
 

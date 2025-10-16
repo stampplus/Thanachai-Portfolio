@@ -119,4 +119,9 @@ This project is released under the **MIT License** — feel free to explore, rem
 
 ---
 
+> 🧠 Powered by creativity, logic, and a touch of AI.
+> Built with love, guided by intuition, refined by code.
+
+---
+
 🪩 *Designed, coded, and vibed by Thanachai (Stamp) — 2025*

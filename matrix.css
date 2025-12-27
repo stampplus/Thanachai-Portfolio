@@ -1,0 +1,47 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: black;
+    overflow: hidden;
+    font-family: monospace;
+    color: #00ff88;
+}
+
+canvas {
+    position: fixed;
+    inset: 0;
+}
+
+.overlay {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    top: 40%;
+}
+
+.overlay h1 {
+    font-size: 3rem;
+    margin-bottom: 10px;
+}
+
+.overlay p {
+    opacity: 0.8;
+    margin-bottom: 20px;
+}
+
+.btn {
+    color: #00ff88;
+    text-decoration: none;
+    border: 1px solid #00ff88;
+    padding: 10px 20px;
+    transition: 0.2s;
+}
+
+.btn:hover {
+    background: #00ff88;
+    color: black;
+}

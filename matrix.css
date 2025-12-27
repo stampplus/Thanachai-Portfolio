@@ -5,15 +5,14 @@
 }
 
 body {
-    background: black;
     overflow: hidden;
-    font-family: monospace;
-    color: #00ff88;
+    font-family: "Inter", sans-serif;
 }
 
 canvas {
     position: fixed;
     inset: 0;
+    z-index: -1;
 }
 
 .overlay {
@@ -31,17 +30,4 @@ canvas {
 .overlay p {
     opacity: 0.8;
     margin-bottom: 20px;
-}
-
-.btn {
-    color: #00ff88;
-    text-decoration: none;
-    border: 1px solid #00ff88;
-    padding: 10px 20px;
-    transition: 0.2s;
-}
-
-.btn:hover {
-    background: #00ff88;
-    color: black;
 }

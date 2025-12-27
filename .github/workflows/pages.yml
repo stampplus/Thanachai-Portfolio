@@ -30,7 +30,7 @@ jobs:
       - name: Upload static site
         uses: actions/upload-pages-artifact@v3
         with:
-          path: . # 👈 สำคัญมาก: deploy จาก root
+          path: .
 
       - name: Deploy to GitHub Pages
         id: deployment

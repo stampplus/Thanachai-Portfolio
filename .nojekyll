@@ -1,0 +1,3 @@
+# Disable automatic GitHub Pages deployment
+# This file prevents the automatic "pages build and deployment" workflow
+# We use a custom workflow (.github/workflows/deploy.yml) instead

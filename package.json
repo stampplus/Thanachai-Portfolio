@@ -1,0 +1,30 @@
+{
+  "name": "thanachai-portfolio",
+  "version": "1.0.0",
+  "description": "[![GitHub Pages](https://img.shields.io/badge/Deploy-GitHub%20Pages-blue?logo=github)](https://stampplus.github.io/Thanachai-Portfolio/)\r [![Vibe Code](https://img.shields.io/badge/vibe-code-black?logo=visualstudiocode)](#)\r [![AI Creative](https://img.shields.io/badge/AI-Creative-pink?logo=openai)](#)\r > “Between logic and light — code becomes creativity.”",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stampplus/Thanachai-Portfolio.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/stampplus/Thanachai-Portfolio/issues"
+  },
+  "homepage": "https://github.com/stampplus/Thanachai-Portfolio#readme",
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.18",
+    "autoprefixer": "^10.4.23",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.18",
+    "vite": "^7.3.1"
+  }
+}

@@ -1,0 +1,144 @@
+@import "tailwindcss";
+
+/* Force dark mode to trigger via the .dark class */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --animate-fadeIn: fadeIn 0.8s ease-out forwards;
+
+  --color-primary: #3B82F6;
+  --color-background-light: #FFFFFF;
+  --color-background-dark: #0D1117;
+  --color-card-light: #F9FAFB;
+  --color-card-dark: #161B22;
+  --color-text-light: #1F2937;
+  --color-text-dark: #E6EDF3;
+  --color-subtext-light: #6B7280;
+  --color-subtext-dark: #8B949E;
+  --color-border-light: #E5E7EB;
+  --color-border-dark: #30363D;
+
+  --shadow-glow: 0 0 15px rgba(59, 130, 246, 0.5), 0 0 5px rgba(59, 130, 246, 0.3);
+
+  --font-sans: "Inter", "sans-serif";
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  @keyframes float-delayed {
+
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-15px);
+    }
+  }
+
+  @keyframes float-slow {
+
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes spin-slow {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes gradient {
+
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+}
+
+@layer utilities {
+
+  /* Custom Spring Easing for Toggle */
+  .ease-spring {
+    transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  /* Floating Animations */
+  .animate-float {
+    animation: float 3s ease-in-out infinite;
+  }
+
+  .animate-float-delayed {
+    animation: float-delayed 4s ease-in-out infinite;
+    animation-delay: 0.5s;
+  }
+
+  .animate-float-slow {
+    animation: float-slow 5s ease-in-out infinite;
+    animation-delay: 1s;
+  }
+
+  .animate-spin-slow {
+    animation: spin-slow 20s linear infinite;
+  }
+
+  .fade-in-delay-1 {
+    animation-delay: 0.2s;
+    opacity: 0;
+    @apply animate-fadeIn;
+  }
+
+  .fade-in-delay-2 {
+    animation-delay: 0.4s;
+    opacity: 0;
+    @apply animate-fadeIn;
+  }
+
+  .fade-in-delay-3 {
+    animation-delay: 0.6s;
+    opacity: 0;
+    @apply animate-fadeIn;
+  }
+
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient 3s ease infinite;
+  }
+}

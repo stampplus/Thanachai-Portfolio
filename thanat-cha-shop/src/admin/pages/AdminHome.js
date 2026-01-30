@@ -15,11 +15,36 @@ async function renderAdminHome(container) {
     return;
   }
 
-  
+  console.log('[DEBUG] AdminHome: Auth passed, loading dashboard data...');
+
   // Load dashboard data
-  const { data: products } = await getAllProducts();
-  const { data: orders } = await getAllOrders();
-  const { data: lowStock } = await getLowStockProducts(5);
+  let products = [];
+  let orders = [];
+  let lowStock = [];
+
+  try {
+    const productsResult = await getAllProducts();
+    console.log('[DEBUG] AdminHome: Products result:', productsResult);
+    products = productsResult.data || [];
+  } catch (e) {
+    console.error('[DEBUG] AdminHome: Error loading products:', e);
+  }
+
+  try {
+    const ordersResult = await getAllOrders();
+    console.log('[DEBUG] AdminHome: Orders result:', ordersResult);
+    orders = ordersResult.data || [];
+  } catch (e) {
+    console.error('[DEBUG] AdminHome: Error loading orders:', e);
+  }
+
+  try {
+    const lowStockResult = await getLowStockProducts(5);
+    console.log('[DEBUG] AdminHome: Low stock result:', lowStockResult);
+    lowStock = lowStockResult.data || [];
+  } catch (e) {
+    console.error('[DEBUG] AdminHome: Error loading low stock:', e);
+  }
 
   const activeProducts = products?.filter(p => p.is_active).length || 0;
   const totalProducts = products?.length || 0;
@@ -216,17 +241,26 @@ function renderAdminLogin(container) {
     e.preventDefault();
     const password = form.querySelector('[name="password"]').value;
     
+    console.log('[DEBUG] Login form submitted');
+    
     if (password === ADMIN_PASSWORD) {
+      console.log('[DEBUG] Password correct, setting auth');
       sessionStorage.setItem('admin_auth', 'true');
       errorEl.classList.add('hidden');
+      
       // Navigate to the current path after login
       const currentPath = window.location.pathname;
+      console.log('[DEBUG] Current path:', currentPath);
+      
       if (currentPath !== '/admin') {
+        console.log('[DEBUG] Reloading to:', currentPath);
         window.location.href = currentPath;
       } else {
+        console.log('[DEBUG] Rendering AdminHome');
         renderAdminHome(container);
       }
     } else {
+      console.log('[DEBUG] Password incorrect');
       errorEl.classList.remove('hidden');
     }
   });

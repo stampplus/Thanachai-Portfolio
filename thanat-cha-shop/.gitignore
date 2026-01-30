@@ -1,8 +1,16 @@
-node_modules
+# dependencies
+node_modules/
+
+# env
 .env
-dist
-.cache
+
+# logs / debug
 *.log
-null
 *.png
+
+# local folders
 plans/
+null
+
+# build
+dist/

@@ -315,13 +315,27 @@ async function renderHome(container) {
   // Fetch products from Supabase
   try {
     const supabase = getSupabase();
+    
+    // DEBUG: First check if we can get any products at all (without is_active filter)
+    const { data: allProducts, error: allError } = await supabase
+      .from('products')
+      .select('id, name, is_active');
+    console.log('[Shop Debug] All products (no filter):', { count: allProducts?.length, products: allProducts, error: allError });
+    
+    // Now try with is_active filter
     const { data: products, error } = await supabase
       .from('products')
       .select('*, product_variants(*)')
       .eq('is_active', true)
       .order('created_at', { ascending: false });
 
+    // DEBUG: Log Supabase response when zero products returned
+    if (!products || products.length === 0) {
+      console.log('[Shop Debug] Supabase returned empty products with is_active=true filter:', { products, error });
+    }
+
     if (error) {
+      console.error('[Shop Debug] Supabase error:', error);
       throw error;
     }
 
@@ -349,6 +363,7 @@ async function renderHome(container) {
 
     gridContainer.innerHTML = featuredProducts.map(product => renderProductCard(product)).join('');
   } catch (err) {
+    console.error('[Shop Debug] Error loading products:', err);
     const gridContainer = container.querySelector('#featured-products-grid');
     gridContainer.innerHTML = `
       <div class="col-span-full text-center py-12">
@@ -437,7 +452,13 @@ async function renderProductList(container, params) {
 
     const { data: products, error } = await query;
 
+    // DEBUG: Log Supabase response when zero products returned
+    if (!products || products.length === 0) {
+      console.log('[Shop Debug] renderProductList: Supabase returned empty products:', { products, error, selectedMood });
+    }
+
     if (error) {
+      console.error('[Shop Debug] renderProductList: Supabase error:', error);
       throw error;
     }
 
@@ -471,6 +492,7 @@ async function renderProductList(container, params) {
 
     gridContainer.innerHTML = mappedProducts.map(product => renderProductCard(product)).join('');
   } catch (err) {
+    console.error('[Shop Debug] renderProductList: Error loading products:', err);
     const countEl = container.querySelector('#product-count');
     const gridContainer = container.querySelector('#products-grid');
     

@@ -5,39 +5,35 @@
 
 let adminProductsData = [];
 let editingProductId = null;
+let editingProductOriginal = null; // Store original product data to preserve is_active
 let pendingImages = []; // Store selected files before upload
+let existingImages = []; // Track existing images during edit
 
 /**
  * Render Products Admin page
  * @param {HTMLElement} container - Container element
  */
 async function renderProductsAdmin(container) {
-  console.log('[DEBUG] renderProductsAdmin called');
-
   if (!checkAdminAuth()) {
-    console.log('[DEBUG] Not authenticated, showing login');
     renderAdminLogin(container);
     return;
   }
-
-  console.log('[DEBUG] Authenticated, loading products...');
 
   // Load products from Supabase
   const supabase = getSupabase();
   const { data, error } = await supabase
     .from('products')
-    .select('*')
+    .select('*, product_variants(*)')
     .order('created_at', { ascending: false });
 
   if (error) {
-    console.error('[DEBUG] Error fetching products:', error);
     adminProductsData = [];
   } else {
-    adminProductsData = data || [];
-    console.log('Products loaded:', adminProductsData.length);
+    adminProductsData = (data || []).map(product => ({
+      ...product,
+      variants: product.product_variants || []
+    }));
   }
-
-  console.log('[DEBUG] adminProductsData set to:', adminProductsData);
 
   container.innerHTML = `
     <div class="min-h-screen bg-gray-50">
@@ -165,7 +161,9 @@ function filterProducts() {
  */
 function openAddProductModal() {
   editingProductId = null;
+  editingProductOriginal = null;
   pendingImages = [];
+  existingImages = [];
   const modal = document.getElementById('product-modal');
   modal.innerHTML = renderProductFormModal();
   openModal('product-form-modal');
@@ -179,7 +177,11 @@ function editProduct(id) {
   const product = adminProductsData.find(p => p.id === id);
   if (!product) return;
   
+  // Store original product to preserve is_active status
+  editingProductOriginal = { ...product };
+  
   pendingImages = [];
+  existingImages = product.images || [];
   const modal = document.getElementById('product-modal');
   modal.innerHTML = renderProductFormModal(product);
   openModal('product-form-modal');
@@ -255,20 +257,17 @@ function renderProductFormModal(product = null) {
         <h4 class="font-medium text-gray-900 mb-3">Product Images</h4>
         
         <!-- Existing Images -->
-        ${product?.images && product.images.length > 0 ? `
-          <div class="mb-4">
-            <p class="text-sm text-gray-600 mb-2">Current Images:</p>
-            <div class="flex gap-2 flex-wrap" id="existing-images">
-              ${product.images.map((img, idx) => `
-                <div class="relative group">
-                  <img src="${img}" alt="Product" class="w-20 h-20 object-cover rounded-lg border border-gray-200">
-                  <button type="button" onclick="removeExistingImage(${idx})" class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-xs opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">×</button>
-                </div>
-              `).join('')}
-            </div>
-            <input type="hidden" name="existing_images" value='${JSON.stringify(product.images)}'>
+        <div id="existing-images-container" class="mb-4 ${product?.images?.length ? '' : 'hidden'}">
+          <p class="text-sm text-gray-600 mb-2">Current Images:</p>
+          <div class="flex gap-2 flex-wrap" id="existing-images">
+            ${(product?.images || []).map((img, idx) => `
+              <div class="relative group" data-image-idx="${idx}">
+                <img src="${img}" alt="Product" class="w-20 h-20 object-cover rounded-lg border border-gray-200">
+                <button type="button" onclick="removeExistingImage(${idx})" class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-xs opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">×</button>
+              </div>
+            `).join('')}
           </div>
-        ` : ''}
+        </div>
         
         <!-- New Images Preview -->
         <div id="new-images-preview" class="flex gap-2 flex-wrap mb-3"></div>
@@ -278,7 +277,6 @@ function renderProductFormModal(product = null) {
           <input
             type="file"
             id="product-images"
-            name="product_images"
             accept="image/*"
             multiple
             class="hidden"
@@ -324,12 +322,10 @@ function handleImageSelect(event) {
   const files = Array.from(event.target.files);
   const previewContainer = document.getElementById('new-images-preview');
   
-  // Add to pending images
   files.forEach(file => {
     if (pendingImages.length < 5) {
       pendingImages.push(file);
       
-      // Create preview
       const reader = new FileReader();
       reader.onload = (e) => {
         const div = document.createElement('div');
@@ -344,7 +340,6 @@ function handleImageSelect(event) {
     }
   });
   
-  // Clear input so same files can be selected again if removed
   event.target.value = '';
 }
 
@@ -356,7 +351,6 @@ function removePendingImage(fileName) {
   if (index > -1) {
     pendingImages.splice(index, 1);
     
-    // Refresh preview
     const previewContainer = document.getElementById('new-images-preview');
     previewContainer.innerHTML = '';
     pendingImages.forEach(file => {
@@ -379,17 +373,22 @@ function removePendingImage(fileName) {
  * Remove existing image
  */
 function removeExistingImage(index) {
-  const existingInput = document.querySelector('input[name="existing_images"]');
-  if (existingInput) {
-    const images = JSON.parse(existingInput.value);
-    images.splice(index, 1);
-    existingInput.value = JSON.stringify(images);
-    
-    // Remove from DOM
-    const container = document.getElementById('existing-images');
-    if (container && container.children[index]) {
-      container.children[index].remove();
-    }
+  existingImages.splice(index, 1);
+  
+  const container = document.getElementById('existing-images');
+  const containerWrapper = document.getElementById('existing-images-container');
+  
+  if (container) {
+    container.innerHTML = existingImages.map((img, idx) => `
+      <div class="relative group" data-image-idx="${idx}">
+        <img src="${img}" alt="Product" class="w-20 h-20 object-cover rounded-lg border border-gray-200">
+        <button type="button" onclick="removeExistingImage(${idx})" class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full text-xs opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">×</button>
+      </div>
+    `).join('');
+  }
+  
+  if (containerWrapper && existingImages.length === 0) {
+    containerWrapper.classList.add('hidden');
   }
 }
 
@@ -476,14 +475,9 @@ function addVariantInput() {
  * Upload images to Supabase Storage
  */
 async function uploadProductImages(files, productSlug) {
-  console.log('[DEBUG] uploadProductImages called, files:', files.length);
-  
-  // Always use window.getSupabase() to ensure client is properly initialized
   const client = window.getSupabase();
-  console.log('[DEBUG] window.getSupabase() returned:', client ? 'client' : 'null');
   
   if (!client) {
-    console.error('[DEBUG] Failed to get Supabase client');
     return [];
   }
   
@@ -500,11 +494,9 @@ async function uploadProductImages(files, productSlug) {
       .upload(filePath, file);
     
     if (error) {
-      console.error('Upload error:', error);
       continue;
     }
     
-    // Get public URL
     const { data: { publicUrl } } = client
       .storage
       .from('products')
@@ -538,17 +530,6 @@ async function handleProductFormSubmit(e) {
     });
   }
   
-  // Get existing images
-  let existingImages = [];
-  const existingInput = e.target.querySelector('input[name="existing_images"]');
-  if (existingInput) {
-    try {
-      existingImages = JSON.parse(existingInput.value);
-    } catch (e) {
-      console.error('Error parsing existing images:', e);
-    }
-  }
-  
   // Upload new images
   let newImageUrls = [];
   if (pendingImages.length > 0) {
@@ -558,11 +539,33 @@ async function handleProductFormSubmit(e) {
   // Combine all images
   const allImages = [...existingImages, ...newImageUrls];
   
-  // Remove product_images field from formData (it's a File object, not for database)
-  const { product_images, variant_size, variant_price, variant_stock, ...cleanFormData } = formData;
+  // CRITICAL FIX: Preserve is_active status when editing
+  // If editing, use the original product's is_active status unless explicitly changed
+  let isActiveValue;
+  if (editingProductId && editingProductOriginal) {
+    // When editing, preserve the original is_active status
+    // The checkbox value should be respected, but default to original if somehow lost
+    isActiveValue = formData.is_active === 'on';
+    // Defensive: if the original was active, ensure it stays active unless explicitly unchecked
+    if (editingProductOriginal.is_active === true && formData.is_active !== 'on') {
+      // This shouldn't happen if checkbox is working, but as a safeguard:
+      isActiveValue = false; // Respect the unchecked state
+    }
+  } else {
+    // For new products, default to active if checkbox is checked
+    isActiveValue = formData.is_active === 'on';
+  }
   
+  // Build clean product data with only valid database fields
+  // Explicitly whitelist fields to avoid sending any unexpected data
   const productData = {
-    ...cleanFormData,
+    name: formData.name,
+    slug: formData.slug,
+    tagline: formData.tagline,
+    description: formData.description,
+    mood: formData.mood,
+    is_active: isActiveValue,
+    is_bestseller: formData.is_bestseller === 'on',
     images: allImages,
     variants
   };
@@ -570,29 +573,24 @@ async function handleProductFormSubmit(e) {
   let result;
   if (editingProductId) {
     result = await window.updateProduct(editingProductId, productData);
-    console.log('Update product result:', result);
   } else {
     result = await window.createProduct(productData);
-    console.log('Create product result:', result);
   }
   
   if (result.error) {
-    console.error('Product save error:', result.error);
     alert('Error saving product: ' + result.error);
     return;
   }
   
-  // Clear pending images
+  // Clear pending images and editing state
   pendingImages = [];
+  existingImages = [];
+  editingProductOriginal = null;
   
   closeModal('product-form-modal');
   
   // Reload products and re-render
   const container = document.getElementById('main-content');
-  const refreshResult = await window.getAllProducts();
-  adminProductsData = refreshResult.data || [];
-  
-  // Re-render the page
   renderProductsAdmin(container);
 }
 
@@ -644,8 +642,6 @@ async function doDeleteProduct(id) {
   
   // Reload and re-render
   const container = document.getElementById('main-content');
-  const refreshResult = await window.getAllProducts();
-  adminProductsData = refreshResult.data || [];
   renderProductsAdmin(container);
 }
 

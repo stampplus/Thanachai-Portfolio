@@ -149,7 +149,7 @@ async function loadAnalyticsData() {
   }
 
   // Load analytics data
-  const result = await getAnalyticsData(dateFrom, dateTo);
+  const result = await window.getAnalyticsData(dateFrom, dateTo);
 
   if (result.error) {
     console.error('Analytics error:', result.error);

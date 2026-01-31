@@ -16,7 +16,7 @@ async function renderOrdersAdmin(container) {
   }
 
   // Load orders
-  const result = await getAllOrders();
+  const result = await window.getAllOrders();
   adminOrdersData = result.data || [];
 
   container.innerHTML = `
@@ -115,7 +115,7 @@ function filterOrders() {
  * View order detail
  */
 async function viewOrderDetail(id) {
-  const result = await getOrderById(id);
+  const result = await window.getOrderById(id);
   const order = result.data;
   if (!order) return;
   
@@ -249,7 +249,7 @@ function renderOrderDetailModal(order) {
  * Update order status
  */
 async function doUpdateOrderStatus(orderId, status) {
-  const result = await updateOrderStatus(orderId, status);
+  const result = await window.updateOrderStatus(orderId, status);
   if (!result.error) {
     closeModal('order-detail-modal');
     renderOrdersAdmin(document.getElementById('main-content'));

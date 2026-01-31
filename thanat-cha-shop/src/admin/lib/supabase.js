@@ -7,9 +7,16 @@
 // SUPABASE CONFIGURATION
 // ========================================
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL
-const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY
+console.log('[DEBUG] Loading supabase.js module...');
 
+// Hardcoded Supabase credentials (from .env file)
+const SUPABASE_URL = 'https://vjdziclbsdudmhpbdlas.supabase.co'
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZqZHppY2xic2R1ZG1ocGJkbGFzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3MjE5MjAsImV4cCI6MjA4NTI5NzkyMH0.1MNEUNiup8HSkonUQsSBr3mruxybj5NhW5uj4UnkaPE'
+
+console.log('[DEBUG] Supabase config loaded:', { 
+  hasUrl: !!SUPABASE_URL, 
+  hasKey: !!SUPABASE_KEY
+});
 
 // ========================================
 // SUPABASE CLIENT
@@ -21,17 +28,28 @@ let supabaseClient = null;
  * Initialize Supabase client
  */
 function initSupabase() {
-  if (supabaseClient) return supabaseClient;
+  console.log('[DEBUG] initSupabase() called');
+  
+  if (supabaseClient) {
+    console.log('[DEBUG] Supabase client already exists, returning existing');
+    return supabaseClient;
+  }
   
   // Check if Supabase library is loaded
+  console.log('[DEBUG] Checking if supabase library is loaded:', typeof supabase);
   if (typeof supabase === 'undefined') {
-    console.error('Supabase library not loaded');
+    console.error('[DEBUG] Supabase library not loaded');
     return null;
   }
   
+  console.log('[DEBUG] Creating new Supabase client');
   supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  console.log('[DEBUG] Supabase client created successfully');
   return supabaseClient;
 }
+
+// Expose to window for global access
+window.initSupabase = initSupabase;
 
 /**
  * Get Supabase client instance
@@ -39,6 +57,9 @@ function initSupabase() {
 function getSupabase() {
   return supabaseClient || initSupabase();
 }
+
+// Expose to window for global access
+window.getSupabase = getSupabase;
 
 // ========================================
 // PRODUCT QUERIES
@@ -647,3 +668,42 @@ async function deleteImage(path) {
   
   return { error: error ? error.message : null };
 }
+
+// ========================================
+// EXPOSE ALL FUNCTIONS GLOBALLY
+// ========================================
+
+// Expose all functions to window for global access
+window.supabaseClient = supabaseClient;
+window.initSupabase = initSupabase;
+window.getSupabase = getSupabase;
+window.getAllProducts = getAllProducts;
+window.getProductById = getProductById;
+window.createProduct = createProduct;
+window.updateProduct = updateProduct;
+window.deleteProduct = deleteProduct;
+window.toggleProductActive = toggleProductActive;
+window.toggleBestseller = toggleBestseller;
+window.updateVariantStock = updateVariantStock;
+window.updateVariantPrice = updateVariantPrice;
+window.getAllOrders = getAllOrders;
+window.getOrderById = getOrderById;
+window.updateOrderStatus = updateOrderStatus;
+window.getLowStockProducts = getLowStockProducts;
+window.getAnalyticsData = getAnalyticsData;
+window.getAllReviews = getAllReviews;
+window.getProductReviews = getProductReviews;
+window.createReview = createReview;
+window.approveReview = approveReview;
+window.deleteReview = deleteReview;
+window.getAllDiscoverySets = getAllDiscoverySets;
+window.getDiscoverySetById = getDiscoverySetById;
+window.createDiscoverySet = createDiscoverySet;
+window.updateDiscoverySet = updateDiscoverySet;
+window.deleteDiscoverySet = deleteDiscoverySet;
+window.uploadImage = uploadImage;
+window.deleteImage = deleteImage;
+
+console.log('[DEBUG] All Supabase functions exposed to window object');
+console.log('[DEBUG] window.getSupabase:', typeof window.getSupabase);
+console.log('[DEBUG] window.createProduct:', typeof window.createProduct);

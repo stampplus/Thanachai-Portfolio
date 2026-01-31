@@ -23,7 +23,7 @@ async function renderAdminHome(container) {
   let lowStock = [];
 
   try {
-    const productsResult = await getAllProducts();
+    const productsResult = await window.getAllProducts();
     console.log('[DEBUG] AdminHome: Products result:', productsResult);
     products = productsResult.data || [];
   } catch (e) {
@@ -31,7 +31,7 @@ async function renderAdminHome(container) {
   }
 
   try {
-    const ordersResult = await getAllOrders();
+    const ordersResult = await window.getAllOrders();
     console.log('[DEBUG] AdminHome: Orders result:', ordersResult);
     orders = ordersResult.data || [];
   } catch (e) {
@@ -39,7 +39,7 @@ async function renderAdminHome(container) {
   }
 
   try {
-    const lowStockResult = await getLowStockProducts(5);
+    const lowStockResult = await window.getLowStockProducts(5);
     console.log('[DEBUG] AdminHome: Low stock result:', lowStockResult);
     lowStock = lowStockResult.data || [];
   } catch (e) {

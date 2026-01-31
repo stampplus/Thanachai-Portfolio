@@ -17,7 +17,7 @@ async function renderDiscoverySetsAdmin(container) {
   }
 
   // Load discovery sets
-  const result = await getAllDiscoverySets();
+  const result = await window.getAllDiscoverySets();
   adminDiscoverySetsData = result.data || [];
 
   container.innerHTML = `
@@ -201,9 +201,9 @@ async function handleDiscoverySetFormSubmit(e) {
   
   let result;
   if (editingDiscoverySetId) {
-    result = await updateDiscoverySet(editingDiscoverySetId, discoverySetData);
+    result = await window.updateDiscoverySet(editingDiscoverySetId, discoverySetData);
   } else {
-    result = await createDiscoverySet(discoverySetData);
+    result = await window.createDiscoverySet(discoverySetData);
   }
   
   if (result.error) {
@@ -215,7 +215,7 @@ async function handleDiscoverySetFormSubmit(e) {
   
   // Reload discovery sets and re-render
   const container = document.getElementById('main-content');
-  const refreshResult = await getAllDiscoverySets();
+  const refreshResult = await window.getAllDiscoverySets();
   adminDiscoverySetsData = refreshResult.data || [];
   renderDiscoverySetsAdmin(container);
 }
@@ -257,7 +257,7 @@ function confirmDeleteDiscoverySet(id) {
  * Delete discovery set
  */
 async function doDeleteDiscoverySet(id) {
-  const result = await deleteDiscoverySet(id);
+  const result = await window.deleteDiscoverySet(id);
   
   if (result.error) {
     alert('Error deleting discovery set: ' + result.error);
@@ -268,7 +268,7 @@ async function doDeleteDiscoverySet(id) {
   
   // Reload and re-render
   const container = document.getElementById('main-content');
-  const refreshResult = await getAllDiscoverySets();
+  const refreshResult = await window.getAllDiscoverySets();
   adminDiscoverySetsData = refreshResult.data || [];
   renderDiscoverySetsAdmin(container);
 }

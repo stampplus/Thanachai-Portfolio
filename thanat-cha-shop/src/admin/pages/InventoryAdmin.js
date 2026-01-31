@@ -16,7 +16,7 @@ async function renderInventoryAdmin(container) {
   }
 
   // Load low stock products
-  const result = await getLowStockProducts(10);
+  const result = await window.getLowStockProducts(10);
   adminInventoryData = result.data || [];
 
   container.innerHTML = `

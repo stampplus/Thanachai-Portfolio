@@ -16,7 +16,7 @@ async function renderReviewsAdmin(container) {
   }
 
   // Load reviews
-  const result = await getAllReviews();
+  const result = await window.getAllReviews();
   adminReviewsData = result.data || [];
 
   container.innerHTML = `
@@ -214,7 +214,7 @@ async function approveReview(id) {
   
   // Reload and re-render
   const container = document.getElementById('main-content');
-  const refreshResult = await getAllReviews();
+  const refreshResult = await window.getAllReviews();
   adminReviewsData = refreshResult.data || [];
   renderReviewsAdmin(container);
 }
@@ -258,7 +258,7 @@ async function doDeleteReview(id) {
   
   // Reload and re-render
   const container = document.getElementById('main-content');
-  const refreshResult = await getAllReviews();
+  const refreshResult = await window.getAllReviews();
   adminReviewsData = refreshResult.data || [];
   renderReviewsAdmin(container);
 }

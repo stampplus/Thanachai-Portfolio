@@ -23,7 +23,7 @@ async function renderProductsAdmin(container) {
   console.log('[DEBUG] Authenticated, loading products...');
   
   // Load products
-  const result = await getAllProducts();
+  const result = await window.getAllProducts();
   console.log('[DEBUG] getAllProducts result:', result);
   
   adminProductsData = result.data || [];
@@ -466,6 +466,17 @@ function addVariantInput() {
  * Upload images to Supabase Storage
  */
 async function uploadProductImages(files, productSlug) {
+  console.log('[DEBUG] uploadProductImages called, files:', files.length);
+  
+  // Always use window.getSupabase() to ensure client is properly initialized
+  const client = window.getSupabase();
+  console.log('[DEBUG] window.getSupabase() returned:', client ? 'client' : 'null');
+  
+  if (!client) {
+    console.error('[DEBUG] Failed to get Supabase client');
+    return [];
+  }
+  
   const uploadedUrls = [];
   
   for (const file of files) {
@@ -473,7 +484,7 @@ async function uploadProductImages(files, productSlug) {
     const fileName = `${productSlug}-${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
     const filePath = `products/${fileName}`;
     
-    const { data, error } = await supabaseClient
+    const { data, error } = await client
       .storage
       .from('products')
       .upload(filePath, file);
@@ -484,7 +495,7 @@ async function uploadProductImages(files, productSlug) {
     }
     
     // Get public URL
-    const { data: { publicUrl } } = supabaseClient
+    const { data: { publicUrl } } = client
       .storage
       .from('products')
       .getPublicUrl(filePath);
@@ -548,10 +559,10 @@ async function handleProductFormSubmit(e) {
   
   let result;
   if (editingProductId) {
-    result = await updateProduct(editingProductId, productData);
+    result = await window.updateProduct(editingProductId, productData);
     console.log('Update product result:', result);
   } else {
-    result = await createProduct(productData);
+    result = await window.createProduct(productData);
     console.log('Create product result:', result);
   }
   
@@ -568,7 +579,7 @@ async function handleProductFormSubmit(e) {
   
   // Reload products and re-render
   const container = document.getElementById('main-content');
-  const refreshResult = await getAllProducts();
+  const refreshResult = await window.getAllProducts();
   adminProductsData = refreshResult.data || [];
   
   // Re-render the page
@@ -612,7 +623,7 @@ function confirmDeleteProduct(id) {
  * Delete product
  */
 async function doDeleteProduct(id) {
-  const result = await deleteProduct(id);
+  const result = await window.deleteProduct(id);
   
   if (result.error) {
     alert('Error deleting product: ' + result.error);
@@ -623,7 +634,7 @@ async function doDeleteProduct(id) {
   
   // Reload and re-render
   const container = document.getElementById('main-content');
-  const refreshResult = await getAllProducts();
+  const refreshResult = await window.getAllProducts();
   adminProductsData = refreshResult.data || [];
   renderProductsAdmin(container);
 }

@@ -109,13 +109,20 @@ function handleAdminRoute(path) {
  * Initialize admin dashboard
  */
 function initAdmin() {
+  console.log('[DEBUG] initAdmin() called, pathname:', window.location.pathname);
+  
   // Only initialize on admin routes
   if (!window.location.pathname.startsWith('/admin')) {
+    console.log('[DEBUG] Not on admin route, skipping initAdmin');
     return;
   }
   
+  console.log('[DEBUG] On admin route, initializing...');
+  
   // Initialize Supabase
-  initSupabase();
+  console.log('[DEBUG] About to call window.initSupabase()...');
+  const supabase = window.initSupabase();
+  console.log('[DEBUG] window.initSupabase() returned:', supabase ? 'client object' : 'null');
   
   // Initialize router
   initAdminRouter();

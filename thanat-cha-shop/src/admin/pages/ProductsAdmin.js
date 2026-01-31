@@ -13,7 +13,7 @@ let pendingImages = []; // Store selected files before upload
  */
 async function renderProductsAdmin(container) {
   console.log('[DEBUG] renderProductsAdmin called');
-  
+
   if (!checkAdminAuth()) {
     console.log('[DEBUG] Not authenticated, showing login');
     renderAdminLogin(container);
@@ -21,12 +21,22 @@ async function renderProductsAdmin(container) {
   }
 
   console.log('[DEBUG] Authenticated, loading products...');
-  
-  // Load products
-  const result = await window.getAllProducts();
-  console.log('[DEBUG] getAllProducts result:', result);
-  
-  adminProductsData = result.data || [];
+
+  // Load products from Supabase
+  const supabase = getSupabase();
+  const { data, error } = await supabase
+    .from('products')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('[DEBUG] Error fetching products:', error);
+    adminProductsData = [];
+  } else {
+    adminProductsData = data || [];
+    console.log('Products loaded:', adminProductsData.length);
+  }
+
   console.log('[DEBUG] adminProductsData set to:', adminProductsData);
 
   container.innerHTML = `

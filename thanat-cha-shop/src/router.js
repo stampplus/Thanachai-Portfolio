@@ -219,7 +219,8 @@ function updateBackButton(path) {
  * Render Home page
  * @param {HTMLElement} container - Container element
  */
-function renderHome(container) {
+async function renderHome(container) {
+  // Show loading state
   container.innerHTML = `
     <!-- Hero Section -->
     <section class="min-h-[85vh] flex flex-col justify-center items-center px-5 py-16 text-center animate-fade-in">
@@ -267,8 +268,10 @@ function renderHome(container) {
         </a>
       </div>
       
-      <div class="product-grid">
-        ${getFeaturedProducts().map(product => renderProductCard(product)).join('')}
+      <div id="featured-products-grid" class="product-grid">
+        <div class="col-span-full flex items-center justify-center py-12">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-accent-light dark:border-accent-dark"></div>
+        </div>
       </div>
     </section>
     
@@ -308,6 +311,52 @@ function renderHome(container) {
       </div>
     </section>
   `;
+
+  // Fetch products from Supabase
+  try {
+    const supabase = getSupabase();
+    const { data: products, error } = await supabase
+      .from('products')
+      .select('*, product_variants(*)')
+      .eq('is_active', true)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      throw error;
+    }
+
+    const gridContainer = container.querySelector('#featured-products-grid');
+    
+    if (!products || products.length === 0) {
+      gridContainer.innerHTML = `
+        <div class="col-span-full text-center py-12">
+          <p class="text-text-secondary-light dark:text-text-secondary-dark">No products available</p>
+        </div>
+      `;
+      return;
+    }
+
+    // Map product_variants to variants for consistency
+    const mappedProducts = products.map(product => ({
+      ...product,
+      variants: product.product_variants || []
+    }));
+
+    // Get featured products (bestsellers first, then first 4)
+    const bestsellers = mappedProducts.filter(p => p.is_bestseller);
+    const others = mappedProducts.filter(p => !p.is_bestseller).slice(0, 4 - bestsellers.length);
+    const featuredProducts = [...bestsellers, ...others];
+
+    gridContainer.innerHTML = featuredProducts.map(product => renderProductCard(product)).join('');
+  } catch (err) {
+    const gridContainer = container.querySelector('#featured-products-grid');
+    gridContainer.innerHTML = `
+      <div class="col-span-full text-center py-12">
+        <p class="text-text-secondary-light dark:text-text-secondary-dark mb-4">Unable to load products</p>
+        <button onclick="window.location.reload()" class="btn btn-secondary">Try Again</button>
+      </div>
+    `;
+  }
 }
 
 /**
@@ -315,15 +364,11 @@ function renderHome(container) {
  * @param {HTMLElement} container - Container element
  * @param {Object} params - Route params
  */
-function renderProductList(container, params) {
+async function renderProductList(container, params) {
   const urlParams = getUrlParams();
   const selectedMood = urlParams.get('mood');
-  const products = getAllProducts();
   
-  const filteredProducts = selectedMood 
-    ? products.filter(p => p.mood === selectedMood)
-    : products;
-  
+  // Show loading state
   container.innerHTML = `
     <div class="px-5 py-6">
       <!-- Header -->
@@ -331,8 +376,8 @@ function renderProductList(container, params) {
         <h1 class="font-display text-title mb-2">
           ${selectedMood ? capitalize(selectedMood) : 'All'} Scents
         </h1>
-        <p class="text-sm text-text-secondary-light dark:text-text-secondary-dark">
-          ${filteredProducts.length} fragrance${filteredProducts.length !== 1 ? 's' : ''}
+        <p class="text-sm text-text-secondary-light dark:text-text-secondary-dark" id="product-count">
+          Loading...
         </p>
       </div>
       
@@ -351,20 +396,11 @@ function renderProductList(container, params) {
       </div>
       
       <!-- Product Grid -->
-      ${filteredProducts.length > 0 ? `
-        <div class="product-grid">
-          ${filteredProducts.map(product => renderProductCard(product)).join('')}
+      <div id="products-grid" class="product-grid">
+        <div class="col-span-full flex items-center justify-center py-12">
+          <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-accent-light dark:border-accent-dark"></div>
         </div>
-      ` : `
-        <div class="text-center py-16">
-          <p class="text-text-secondary-light dark:text-text-secondary-dark">
-            No scents found for this mood.
-          </p>
-          <a href="/products" class="btn btn-secondary mt-4" data-nav>
-            View all scents
-          </a>
-        </div>
-      `}
+      </div>
     </div>
     
     <!-- Discovery Set Banner -->
@@ -385,6 +421,67 @@ function renderProductList(container, params) {
       </div>
     </div>
   `;
+
+  // Fetch products from Supabase
+  try {
+    const supabase = getSupabase();
+    let query = supabase
+      .from('products')
+      .select('*, product_variants(*)')
+      .eq('is_active', true)
+      .order('created_at', { ascending: false });
+
+    if (selectedMood) {
+      query = query.eq('mood', selectedMood);
+    }
+
+    const { data: products, error } = await query;
+
+    if (error) {
+      throw error;
+    }
+
+    const countEl = container.querySelector('#product-count');
+    const gridContainer = container.querySelector('#products-grid');
+    
+    if (!products || products.length === 0) {
+      countEl.textContent = '0 fragrances';
+      gridContainer.innerHTML = `
+        <div class="col-span-full text-center py-16">
+          <p class="text-text-secondary-light dark:text-text-secondary-dark mb-4">
+            ${selectedMood ? 'No scents found for this mood.' : 'No products available.'}
+          </p>
+          ${selectedMood ? `
+            <a href="/products" class="btn btn-secondary" data-nav>
+              View all scents
+            </a>
+          ` : ''}
+        </div>
+      `;
+      return;
+    }
+
+    countEl.textContent = `${products.length} fragrance${products.length !== 1 ? 's' : ''}`;
+
+    // Map product_variants to variants for consistency
+    const mappedProducts = products.map(product => ({
+      ...product,
+      variants: product.product_variants || []
+    }));
+
+    gridContainer.innerHTML = mappedProducts.map(product => renderProductCard(product)).join('');
+  } catch (err) {
+    const countEl = container.querySelector('#product-count');
+    const gridContainer = container.querySelector('#products-grid');
+    
+    countEl.textContent = 'Error loading products';
+    gridContainer.innerHTML = `
+      <div class="col-span-full text-center py-16">
+        <p class="text-text-secondary-light dark:text-text-secondary-dark mb-4">Unable to load products</p>
+        <button onclick="window.location.reload()" class="btn btn-secondary">Try Again</button>
+      </div>
+    `;
+  }
 }
 
 /**
@@ -1210,18 +1307,24 @@ function renderContact(container) {
  * @returns {string} HTML string
  */
 function renderProductCard(product) {
-  const minPrice = Math.min(...product.variants.map(v => v.price));
-  
+  const minPrice = product.variants && product.variants.length > 0
+    ? Math.min(...product.variants.map(v => v.price))
+    : 0;
+  const imageUrl = product.images && product.images.length > 0
+    ? product.images[0]
+    : getPlaceholderImage(200, 250, product.name);
+  const isBestseller = product.is_bestseller || product.isBestseller;
+
   return `
     <a href="/products/${product.slug}" class="card group" data-nav>
       <div class="relative aspect-[4/5] overflow-hidden">
-        <img 
-          src="${product.images?.[0] || getPlaceholderImage(200, 250, product.name)}"
+        <img
+          src="${imageUrl}"
           alt="${product.name}"
           class="card-image transition-transform duration-500 group-hover:scale-105"
           loading="lazy"
         >
-        ${product.isBestseller ? `
+        ${isBestseller ? `
           <span class="absolute top-3 left-3 px-2 py-1 bg-accent-light dark:bg-accent-dark text-white text-xs font-medium rounded-full">
             Bestseller
           </span>

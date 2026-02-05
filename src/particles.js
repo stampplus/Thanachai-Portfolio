@@ -7,9 +7,9 @@
  * Particle class representing a single particle
  */
 class Particle {
-    constructor(canvas, options = {}) {
+    constructor(canvas, ctx, options = {}) {
         this.canvas = canvas;
-        this.ctx = canvas.getContext('2d');
+        this.ctx = ctx;
         
         // Position
         this.x = Math.random() * canvas.width;
@@ -144,7 +144,8 @@ class ParticleSystem {
         this.particles = [];
         for (let i = 0; i < this.config.particleCount; i++) {
             this.particles.push(new Particle(
-                { width: this.width, height: this.height },
+                this.canvas,
+                this.ctx,
                 { speed: this.config.speed, maxRadius: this.config.maxRadius }
             ));
         }

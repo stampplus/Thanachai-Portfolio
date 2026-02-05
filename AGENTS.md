@@ -1,46 +1,34 @@
-# Thanachai Portfolio — Agent Guide
+# AGENTS.md — Thanachai Portfolio
 
-> This guide provides essential information for AI coding agents working on this project.
+> AI coding agent guide for this project. Read this first before making any changes.
 
 ---
 
 ## Project Overview
 
-**Thanachai Portfolio** is a personal portfolio website for Thanachai (Stamp) — an AI Creative Developer. The project embodies a "Vibe Code" philosophy where design is emotion and code is its heartbeat.
+**Thanachai Portfolio** is a personal portfolio website showcasing AI creative work. The project follows a "Vibe Code" philosophy — blending emotion-driven design with technical precision.
 
-- **Live Demo**: https://stampplus.github.io/Thanachai-Portfolio/
-- **Repository**: https://github.com/stampplus/Thanachai-Portfolio
-- **Deployment**: GitHub Pages (auto-deployed from `main` branch)
-
-### Key Characteristics
-
-- Dark-mode-first aesthetic with gradient accents (blue to purple)
-- Heavy use of glassmorphism effects (`backdrop-blur`)
-- Smooth animations and floating particle effects
-- Mobile-responsive navigation with hamburger menu
-- Matrix rain animation (Canvas-based, with Hiragana characters)
-- GitHub API integration for live stats display
+- **Repository:** https://github.com/stampplus/Thanachai-Portfolio
+- **Live Site:** https://stampplus.github.io/Thanachai-Portfolio/
+- **Tech Stack:** HTML5, TailwindCSS v4, Vanilla JavaScript (ES6), Vite
+- **Deployment:** GitHub Pages
 
 ---
 
 ## Technology Stack
 
-| Layer | Technology | Version | Purpose |
-|-------|------------|---------|---------|
-| Build Tool | Vite | ^7.3.1 | Dev server, bundling, HMR |
-| Styling | Tailwind CSS | ^4.1.18 | Utility-first CSS |
-| PostCSS | @tailwindcss/postcss | ^4.1.18 | Tailwind CSS processing |
-| Autoprefixer | autoprefixer | ^10.4.23 | CSS vendor prefixing |
-| Language | JavaScript | ES6+ | No TypeScript |
-| Icons | Material Icons | - | Google Fonts icon library |
-| Fonts | Inter | - | Primary font family |
+| Technology | Version | Purpose |
+|------------|---------|---------|
+| Vite | ^7.3.1 | Build tool and dev server |
+| TailwindCSS | ^4.1.18 | Utility-first CSS framework |
+| PostCSS | ^8.5.6 | CSS processing with Tailwind plugin |
+| Autoprefixer | ^10.4.23 | CSS vendor prefixing |
 
-### Tailwind CSS v4 Notes
+### External Dependencies (CDN)
 
-This project uses Tailwind CSS v4 with the new CSS-based configuration:
-- Configuration is in `src/style.css` using `@theme` directive
-- Uses `@import "tailwindcss"` instead of traditional directives
-- Custom animations defined in CSS using `@keyframes`
+- **Google Fonts:** Inter (sans-serif)
+- **Material Icons:** Google Material Icons font
+- **Tailwind CDN:** Used only in `matrix.html` standalone page
 
 ---
 
@@ -48,28 +36,22 @@ This project uses Tailwind CSS v4 with the new CSS-based configuration:
 
 ```
 Thanachai-Portfolio/
-├── index.html              # Main entry point (single-page portfolio)
-├── matrix.html             # Standalone Matrix rain animation page
-├── matrix.js               # Standalone Matrix script (non-module)
-├── matrix.css              # Matrix page styles
-├── package.json            # Dependencies and scripts
-├── vite.config.js          # Vite configuration
-├── tailwind.config.js      # Tailwind v3 config (legacy, mostly unused)
-├── postcss.config.js       # PostCSS configuration
-├── .nojekyll               # Prevents GitHub Pages from using Jekyll
-├── COMMIT_GUIDE.md         # Commit message conventions
-├── README.md               # Human-readable project docs
-├── plans/
-│   └── thanat-cha-architecture.md  # Separate perfume shop project spec
-├── .github/
-│   └── workflows/
-│       └── deploy.yml      # GitHub Pages deployment workflow
+├── index.html              # Main portfolio page (SPA structure)
+├── matrix.html             # Standalone Matrix rain demo page
+├── matrix.css              # Styles for matrix.html
+├── matrix.js               # Standalone Matrix rain script
 ├── src/
-│   ├── main.js             # Main entry script (imports style.css)
-│   ├── style.css           # Tailwind v4 theme + custom animations
-│   ├── matrix.js           # Matrix rain animation (ES module)
-│   └── github.js           # GitHub API integration
-└── dist/                   # Build output (git-ignored, but present)
+│   ├── main.js             # Entry point: initializes modules
+│   ├── style.css           # Tailwind imports + custom animations
+│   ├── matrix.js           # Matrix rain animation module (ES6)
+│   └── github.js           # GitHub API integration module
+├── dist/                   # Production build output (tracked for GitHub Pages)
+├── .github/workflows/
+│   └── deploy.yml          # GitHub Pages deployment workflow
+├── vite.config.js          # Vite configuration
+├── tailwind.config.js      # Tailwind v4 theme configuration
+├── postcss.config.js       # PostCSS plugins configuration
+└── package.json            # Dependencies and npm scripts
 ```
 
 ---
@@ -77,215 +59,244 @@ Thanachai-Portfolio/
 ## Build Commands
 
 ```bash
-# Start development server (port 5173, auto-opens browser)
+# Development server (port 5173, auto-opens browser)
 npm run dev
 
-# Build for production (outputs to dist/)
+# Production build (outputs to dist/)
 npm run build
 
 # Preview production build locally
 npm run preview
 ```
 
-### Build Output
+### Important Build Notes
 
-- **Output Directory**: `dist/`
-- **Assets Directory**: `dist/assets/`
-- **Sourcemaps**: Disabled in production
-- **Minification**: esbuild
+- The `dist/` folder is **committed to the repository** because GitHub Pages deploys directly from it
+- Always run `npm run build` before committing changes that affect the built output
+- The GitHub Actions workflow deploys from `./dist` on every push to `main`
 
 ---
 
-## Code Style Guidelines
+## Configuration Details
 
-### JavaScript
+### Vite Configuration (`vite.config.js`)
 
-- Use ES6+ syntax (arrow functions, const/let, async/await)
-- Prefer module imports/exports
-- Use `fetch` for API calls
-- Error handling with try/catch for async operations
-
-### CSS/Tailwind
-
-- Use Tailwind utility classes for layout and styling
-- Custom animations defined in `src/style.css` using `@theme`
-- Glassmorphism pattern: `backdrop-blur-xl bg-white/5`
-- Gradient text: `text-transparent bg-clip-text bg-gradient-to-r`
-- Hover transitions: `transition-all duration-300`
-
-### HTML Structure Patterns
-
-```html
-<!-- Section with background effects -->
-<section class="relative py-32 animate-fadeIn overflow-hidden">
-    <!-- Background gradient -->
-    <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/5 to-transparent pointer-events-none">
-    </div>
-    
-    <!-- Content container with max-width -->
-    <div class="max-w-7xl mx-auto relative z-10">
-        <!-- Content here -->
-    </div>
-</section>
+```javascript
+base: '/Thanachai-Portfolio/'    // GitHub Pages subdirectory path
+outDir: 'dist'                   // Build output directory
+sourcemap: false                 // Disabled for production
+minify: 'esbuild'                // Code minification
+assetsDir: 'assets'              // Static assets folder
 ```
 
-### Gradient Button Pattern
+### Tailwind Configuration (`tailwind.config.js`)
 
-```html
-<a class="relative group bg-gradient-to-r from-blue-600 to-purple-600 text-white px-6 py-2.5 rounded-xl 
-          font-semibold overflow-hidden transition-all duration-300 hover:shadow-[0_0_40px_rgba(59,130,246,0.5)]">
-    <div class="absolute inset-0 bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 
-                opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-    </div>
-    <span class="relative z-10">Button Text</span>
-</a>
+- **Dark Mode:** `class` strategy (controlled via `<html class="dark">`)
+- **Content Paths:** `./index.html`, `./src/**/*.{js,ts,jsx,tsx}`
+- **Custom Theme Extensions:**
+  - Colors: primary, background-light/dark, card-light/dark, text-light/dark, etc.
+  - Font: Inter
+  - Shadows: glow effects
+  - Animations: fadeIn, gradient
+
+### PostCSS Configuration (`postcss.config.js`)
+
+Uses TailwindCSS v4 PostCSS plugin structure:
+```javascript
+plugins: {
+    '@tailwindcss/postcss': {},
+    autoprefixer: {},
+}
 ```
 
 ---
 
-## Git Commit Conventions
+## Code Organization
 
-See `COMMIT_GUIDE.md` for full details.
+### Entry Point (`src/main.js`)
 
-| Type | Description | Example |
-|------|-------------|---------|
-| `feat(vibe)` | New creative feature | `feat(vibe): add animated section transitions 🌙` |
-| `refactor(docs)` | Documentation or structure update | `refactor(docs): unify all markdowns into README.md` |
-| `style(ui)` | Visual or layout tweaks | `style(ui): enhance card shadows and glow` |
-| `chore(sync)` | Maintenance / cleanup | `chore(sync): update dependencies and meta` |
+```javascript
+import './style.css';
+import { initMatrix } from './matrix.js';
+import { fetchGitHubStats } from './github.js';
 
----
+// Initializes:
+// 1. Matrix animation (if #matrix canvas exists)
+// 2. GitHub stats fetch and DOM update
+// 3. Mobile menu toggle functionality
+```
 
-## Deployment Process
+### Module Responsibilities
 
-### GitHub Pages Deployment
+| Module | Purpose |
+|--------|---------|
+| `src/style.css` | Tailwind v4 imports, custom @theme definitions, utility classes |
+| `src/matrix.js` | Canvas-based Matrix rain animation with Hiragana characters |
+| `src/github.js` | Fetches GitHub user stats (repos, followers) from public API |
 
-The project uses GitHub Actions for automated deployment:
-
-1. **Trigger**: Push to `main` branch or manual workflow dispatch
-2. **Workflow**: `.github/workflows/deploy.yml`
-3. **Deployment Source**: `dist/` folder (pre-built)
-
-**Important**: The `dist/` folder is pre-built and committed to the repository. The deployment workflow uploads the existing `dist/` folder to GitHub Pages without rebuilding.
-
-### Base Path Configuration
-
-The project is deployed to a subdirectory (`/Thanachai-Portfolio/`), configured in:
-- `vite.config.js`: `base: '/Thanachai-Portfolio/'`
-- All asset paths must be relative or use this base path
-
----
-
-## Key Components
-
-### Matrix Rain Animation
+### Matrix Animation Details
 
 Two implementations exist:
-1. **Module version** (`src/matrix.js`): Used in main portfolio, imported as ES module
-2. **Standalone version** (`matrix.js`): Used in `matrix.html`, vanilla JS
+1. **`src/matrix.js`** — ES6 module used in main site (canvas in work section)
+2. **`matrix.js`** (root) — Standalone script for `matrix.html` full-page demo
 
-Canvas-based animation with:
-- Latin characters (A-Z, 0-9)
-- Hiragana characters (あいうえお...)
-- Green text color (`#00ff9c`)
-- Fade trail effect using semi-transparent fill
-
-### GitHub Stats Integration
-
-Located in `src/github.js`:
-- Fetches data from `https://api.github/users/stampplus`
-- Displays repository count and follower count
-- Falls back gracefully on API errors
-
-### Mobile Navigation
-
-- Hamburger menu button (visible on mobile only)
-- Toggle between `hidden` and `flex` classes
-- Smooth transitions with backdrop blur
+The animation combines Latin characters (A-Z, 0-9) and Japanese Hiragana for a cyberpunk aesthetic.
 
 ---
 
-## Development Notes
+## Styling Conventions
 
-### Tailwind CSS v4 Configuration
+### Tailwind v4 Usage
 
-The project uses Tailwind CSS v4 with CSS-based configuration in `src/style.css`:
+The project uses TailwindCSS v4 with the new `@import` and `@theme` syntax:
 
 ```css
+/* In src/style.css */
 @import "tailwindcss";
 
 @theme {
   --animate-fadeIn: fadeIn 0.8s ease-out forwards;
   --color-primary: #3B82F6;
-  /* ... more theme variables */
-  
-  @keyframes fadeIn {
-    0% { opacity: 0; transform: translateY(20px); }
-    100% { opacity: 1; transform: translateY(0); }
-  }
+  /* ... custom properties */
+}
+
+@layer utilities {
+  .animate-float { /* custom utilities */ }
 }
 ```
 
-### Font Loading
+### Design System
 
-- Inter font loaded from Google Fonts
-- Material Icons loaded from Google Fonts
-- Both use `display=swap` for performance
+- **Color Palette:** Dark mode by default (`#0D1117` background)
+- **Accent Colors:** Blue (`#3B82F6`) to Purple gradient
+- **Typography:** Inter font family
+- **Border Radius:** `0.75rem` (rounded-2xl commonly used)
+- **Animations:** fadeIn, float variants, spin-slow, gradient shifting
 
-### No Framework
+### CSS Class Patterns
 
-This is a vanilla JavaScript project:
-- No React, Vue, or other frontend frameworks
-- No build-time framework dependencies
-- Direct DOM manipulation for interactivity
+Common patterns found in `index.html`:
+- Gradient backgrounds: `bg-gradient-to-br from-blue-500/10 via-purple-500/5`
+- Glassmorphism: `backdrop-blur-sm`, `backdrop-blur-xl`, `backdrop-blur-2xl`
+- Hover effects: `group-hover:scale-110`, `hover:shadow-[0_0_50px_rgba(59,130,246,0.2)]`
+- Transitions: `transition-all duration-300`, `transition-all duration-500`
 
 ---
 
-## Testing Strategy
+## GitHub Pages Deployment
 
-Currently, this project has no automated testing setup. Manual testing checklist:
+### Workflow (`.github/workflows/deploy.yml`)
 
-- [ ] Responsive layout on mobile (320px+), tablet (768px+), desktop (1024px+)
-- [ ] Matrix animation renders correctly
-- [ ] GitHub stats load and display
+Triggered on:
+- Push to `main` branch
+- Manual workflow dispatch
+
+Deploys the `dist/` folder to GitHub Pages using `actions/deploy-pages@v4`.
+
+### Deployment Checklist
+
+Before pushing to `main`:
+1. Run `npm run build` to update `dist/`
+2. Verify the build output in `dist/`
+3. Commit both source changes and `dist/` folder
+4. Push to trigger deployment
+
+---
+
+## Development Guidelines
+
+### Adding New Features
+
+1. **New Pages:** Create HTML files in root; use Vite's module system for JS/CSS
+2. **New Components:** Add to `src/` as ES6 modules, import in `main.js`
+3. **Styling:** Prefer Tailwind utilities; add custom CSS in `src/style.css` `@layer utilities`
+4. **Animations:** Define keyframes in `@theme` block; create utility classes in `@layer utilities`
+
+### JavaScript Patterns
+
+- Use ES6 modules with explicit imports/exports
+- Check DOM element existence before attaching event listeners
+- Use `async/await` for API calls with try/catch error handling
+
+Example:
+```javascript
+// Check element exists before initialization
+if (document.getElementById('matrix')) {
+    initMatrix();
+}
+
+// API calls with error handling
+export async function fetchGitHubStats() {
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error('Failed to fetch');
+        return await response.json();
+    } catch (error) {
+        console.error('Error:', error);
+        return null;
+    }
+}
+```
+
+### Working with Images
+
+The project uses Google-hosted images (LH3 Google User Content URLs). To update images:
+1. Upload new images to a reliable hosting service
+2. Update the `src` attributes in `index.html`
+
+---
+
+## Testing
+
+This project does not currently have automated tests. Manual testing checklist:
+
+- [ ] `npm run dev` starts without errors
+- [ ] `npm run build` completes successfully
+- [ ] `npm run preview` shows the built site correctly
+- [ ] Matrix animation renders in work section
+- [ ] GitHub stats load and display (if API available)
 - [ ] Mobile menu toggles properly
-- [ ] All navigation links work
-- [ ] No console errors
+- [ ] All navigation anchor links work
+- [ ] Responsive layout works on mobile, tablet, desktop
 
 ---
 
 ## Security Considerations
 
-1. **GitHub API**: Uses public API endpoint, no authentication token required
-2. **External Images**: Uses Google-hosted images (lh3.googleusercontent.com)
-3. **No User Input**: Portfolio is static, no forms or user data collection
-4. **HTTPS Only**: All external resources loaded via HTTPS
+1. **GitHub API:** Uses public API endpoint (no token required for user data)
+2. **External Resources:** Fonts and icons loaded from Google CDNs
+3. **No Sensitive Data:** No API keys or secrets in the codebase
+4. **CSP:** No Content Security Policy currently configured
 
 ---
 
-## Related Projects
+## Common Issues
 
-### THANAT-CHA Perfume Shop
+### Build fails with Tailwind v4 errors
 
-The `plans/thanat-cha-architecture.md` file contains specifications for a separate project — a premium Thai niche perfume e-commerce web application. This is NOT part of the portfolio codebase but is stored in the repository for reference.
+Ensure you're using the correct import syntax:
+```css
+@import "tailwindcss";  /* v4 syntax */
+```
+Not the v3 directive syntax.
 
-**Key specs**:
-- Mobile-first LINE-integrated shopping experience
-- Tech stack: Vanilla JS + Vite + Tailwind CSS v4 + Supabase
-- Target market: Thailand
-- Payment: QR PromptPay, Bank Transfer
+### GitHub Pages shows 404
+
+- Verify `base` path in `vite.config.js` matches your repository name
+- Ensure `dist/` folder is committed and pushed
+
+### Matrix animation not appearing
+
+- Check that canvas element has `id="matrix"`
+- Verify `initMatrix()` is being called in `main.js`
 
 ---
 
-## Useful Resources
+## License
 
-- **Vite Docs**: https://vitejs.dev/
-- **Tailwind CSS v4 Docs**: https://tailwindcss.com/docs/v4-beta
-- **Material Icons**: https://fonts.google.com/icons
-- **GitHub Pages**: https://docs.github.com/pages
+ISC License — see `package.json` for details.
 
 ---
 
-> "Vibe is the invisible syntax of emotion — and code is how I translate it into light."
-> 
-> — Thanachai (Stamp)
+> Last updated: 2026-02-05
+> For questions or updates to this guide, update this file directly.

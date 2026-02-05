@@ -1,11 +1,30 @@
 import './style.css';
 import { initMatrix } from './matrix.js';
 import { fetchGitHubStats } from './github.js';
+import { initProjects } from './projects.js';
+import { initMiniProjects } from './projectsSection.js';
+import { initParticles } from './particles.js';
 
 // Initialize Matrix Animation
 if (document.getElementById('matrix')) {
     initMatrix();
 }
+
+// Initialize Hero Particle Animation
+if (document.getElementById('hero-particles')) {
+    initParticles('hero-particles', {
+        particleCount: 40,
+        connectionDistance: 120,
+        speed: 0.2,
+        fpsLimit: 60
+    });
+}
+
+// Initialize Projects Showcase
+initProjects();
+
+// Initialize Mini Projects Showcase
+initMiniProjects();
 
 // GitHub Stats Integration
 fetchGitHubStats().then(stats => {

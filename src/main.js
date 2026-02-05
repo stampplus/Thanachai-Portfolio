@@ -23,8 +23,7 @@ if (document.getElementById('hero-particles')) {
 // Initialize Projects Showcase
 initProjects();
 
-// Initialize Mini Projects Showcase
-initMiniProjects();
+// Note: Mini Projects Showcase removed
 
 // GitHub Stats Integration
 fetchGitHubStats().then(stats => {
